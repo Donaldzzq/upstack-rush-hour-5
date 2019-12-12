@@ -1,19 +1,32 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  StatusBar,
+  SafeAreaView
+} from "react-native";
+import { Provider } from "mobx-react";
+import { rootStore } from "./src/store/RootStore";
+import AppNavigator from "./src/routes/AppNavigator";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
+    <Provider {...rootStore}>
+      <SafeAreaView style={styles.container}>
+        {Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
+        <AppNavigator />
+      </SafeAreaView>
+    </Provider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
+  }
 });
