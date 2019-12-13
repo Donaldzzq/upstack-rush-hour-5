@@ -15,7 +15,7 @@ interface Props {
 
 class Loading extends React.Component<Props> {
   async componentDidMount() {
-    this.props.navigation.navigate(ROOT_ROUTES.main);
+    this.props.navigation.navigate(ROUTES.auth.login);
   }
 
   render() {

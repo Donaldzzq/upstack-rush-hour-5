@@ -1,11 +1,13 @@
-import { createAppContainer, createSwitchNavigator } from "react-navigation";
+import { createAppContainer } from "react-navigation";
+import createAnimatedSwitchNavigator from "react-navigation-animated-switch";
+
 import MainTabNavigator from "./MainTabNavigator";
 import AuthStack from "./AuthNavigator";
 import { Loading } from "../screens/Loading";
-import { ROOT_ROUTES } from "./Routes";
+import { ROOT_ROUTES, ROUTES } from "./Routes";
 
 export default createAppContainer(
-  createSwitchNavigator(
+  createAnimatedSwitchNavigator(
     {
       [ROOT_ROUTES.loading]: Loading,
       [ROOT_ROUTES.main]: MainTabNavigator,

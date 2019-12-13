@@ -5,7 +5,7 @@ import { HomeNavigator } from "./HomeNavigator";
 
 const BottomTab = createBottomTabNavigator(
   {
-    HomeNavigator
+    Home: HomeNavigator
   },
   {
     tabBarOptions: {

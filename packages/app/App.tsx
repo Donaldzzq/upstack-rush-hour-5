@@ -14,10 +14,8 @@ import AppNavigator from "./src/routes/AppNavigator";
 export default function App() {
   return (
     <Provider {...rootStore}>
-      <SafeAreaView style={styles.container}>
-        {Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
-        <AppNavigator />
-      </SafeAreaView>
+      {Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
+      <AppNavigator />
     </Provider>
   );
 }

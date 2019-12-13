@@ -10,7 +10,14 @@ const HomeNavigator = createStackNavigator({
 });
 
 HomeNavigator.navigationOptions = {
-  tabBarLabel: "For You"
+  tabBarLabel: "Me",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === "ios" ? "ios-person" : "md-person"}
+    />
+  ),
+  tabBarTestID: "Home Tab"
 };
 
 export { HomeNavigator };

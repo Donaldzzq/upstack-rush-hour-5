@@ -1,6 +1,7 @@
 const AUTH_ROUTES = {
   login: "Login",
-  register: "Register"
+  register: "Register",
+  welcome: "Welcome"
 };
 
 const MAIN_ROUTES = {
