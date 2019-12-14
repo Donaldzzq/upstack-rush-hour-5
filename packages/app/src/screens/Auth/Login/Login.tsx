@@ -3,18 +3,35 @@ import { View, Text, Image, StyleSheet, SafeAreaView } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AuthStore } from "../../../store/AuthStore";
+import { inject, observer } from "mobx-react";
 
 interface Props {
   navigation: NavigationStackProp;
+  authStore: AuthStore;
 }
 interface State {}
 
-class Login extends Component<Props, State> {
-  state = {};
+class LoginComponent extends Component<Props, State> {
+  state = {
+    errorMessage: ""
+  };
 
   componentDidMount = () => {};
 
+  googleLogin = async () => {
+    const response = await this.props.authStore.googleLogin();
+    if (response.success) {
+      this.props.navigation.navigate("Main");
+    } else {
+      this.setState({
+        errorMessage: response.message
+      });
+    }
+  };
+
   render() {
+    const { errorMessage } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAwareScrollView style={{ flex: 1 }}>
@@ -39,8 +56,8 @@ class Login extends Component<Props, State> {
             <Input
               containerStyle={styles.form}
               inputStyle={styles.input}
-              label="Your email address/username"
-              placeholder="Email/Username"
+              label="Your email address"
+              placeholder="Email"
               leftIcon={{ type: "font-awesome", name: "user" }}
             />
             <Input
@@ -51,6 +68,9 @@ class Login extends Component<Props, State> {
               placeholder="Password"
               leftIcon={{ type: "font-awesome", name: "lock" }}
             />
+            {errorMessage !== "" ? (
+              <Text style={styles.error}>{errorMessage}</Text>
+            ) : null}
             <View style={styles.buttonRow}>
               <Button
                 onPress={() => {
@@ -62,6 +82,7 @@ class Login extends Component<Props, State> {
             </View>
             <View style={styles.buttonRow}>
               <Button
+                onPress={this.googleLogin}
                 containerStyle={{ ...styles.button, marginRight: 20 }}
                 title="Login With Google"
               />
@@ -109,7 +130,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     left: 20
+  },
+  error: {
+    color: "red"
   }
 });
+
+const Login = inject("authStore")(observer(LoginComponent));
 
 export { Login };

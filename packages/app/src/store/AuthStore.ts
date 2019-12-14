@@ -2,8 +2,13 @@ import { observable, action } from "mobx";
 import { api } from "../config/api";
 import { extractResponseError } from "../util/extractResponseError";
 import { AsyncStorage } from "react-native";
+import * as Google from "expo-google-app-auth";
+import {
+  googleAndroidClientId,
+  googleIosClientId
+} from "../config/servigConfig";
 
-class AuthStore {
+export class AuthStore {
   @observable user = null;
   @observable isLoggedIn = false;
 
@@ -99,6 +104,41 @@ class AuthStore {
   @action clearToken = async () => {
     delete api.defaults.headers.common["Authorization"];
     await AsyncStorage.removeItem("TOPTAL_FOOD_AUTH_TOKEN");
+  };
+
+  @action
+  googleLogin = async () => {
+    try {
+      const result = await Google.logInAsync({
+        clientId: googleIosClientId,
+        androidClientId: googleAndroidClientId,
+        iosClientId: googleIosClientId,
+        scopes: ["profile", "email"]
+      });
+      const { type } = result;
+      if (type === "success") {
+        const {
+          data: { token, user }
+        } = await api.post("/auth/oauth/google", {
+          token: result.accessToken
+        });
+        this.setUser(user);
+        this.setToken(token);
+        this.onLogin();
+        return {
+          success: true
+        };
+      } else {
+        return {
+          success: false
+        };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        message: extractResponseError(err)
+      };
+    }
   };
 }
 

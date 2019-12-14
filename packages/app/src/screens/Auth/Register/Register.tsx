@@ -36,13 +36,13 @@ class Register extends Component<Props, State> {
               }}
             />
             <Text style={styles.title}>Register</Text>
-            <Input
+            {/* <Input
               containerStyle={styles.form}
               inputStyle={styles.input}
               label="Your username"
-              placeholder="Username"
+              placeholder="First Name"
               leftIcon={{ type: "font-awesome", name: "user" }}
-            />
+            /> */}
             <Input
               containerStyle={styles.form}
               inputStyle={styles.input}

@@ -3,6 +3,8 @@ const md5 = require("blueimp-md5");
 const Token = require("../lib/token");
 const authentication = require("../middleware/authentication");
 const router = express.Router();
+const uuidv4 = require("uuid/v4");
+const axios = require("axios");
 const {
   User,
   Sequelize: { Op }
@@ -12,14 +14,7 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({
       where: {
-        [Op.or]: [
-          {
-            username: req.body.username
-          },
-          {
-            email: req.body.username
-          }
-        ]
+        email: req.body.email
       }
     });
 
@@ -37,8 +32,7 @@ router.post("/login", async (req, res) => {
         id: user.id,
         uid: user.uid,
         username: user.username,
-        email: user.email,
-        role: user.role
+        email: user.email
       };
       const token = Token.sign(returnUser);
       res
@@ -107,9 +101,9 @@ router.post("/register", async (req, res) => {
     }
 
     const newUser = {
+      uid: uuidv4(),
       username: req.body.username,
-      email: req.body.email,
-      role: "user"
+      email: req.body.email
     };
 
     const created = await User.create({
@@ -160,6 +154,70 @@ router.post("/change-password", authentication.verify, async (req, res) => {
         .end();
     }
   } catch (err) {
+    res
+      .status(500)
+      .send(err.message)
+      .end();
+  }
+});
+
+router.post("/oauth/google", async (req, res) => {
+  try {
+    const accessToken = req.body.token;
+    const {
+      data: { email, picture, id, family_name, given_name }
+    } = await axios({
+      url: "https://www.googleapis.com/oauth2/v2/userinfo",
+      method: "get",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    const user = await User.findOne({
+      where: {
+        email
+      }
+    });
+
+    if (user) {
+      const returnUser = {
+        id: user.id,
+        uid: user.uid,
+        username: user.username,
+        email: user.email
+      };
+      const token = Token.sign(returnUser);
+      res
+        .status(200)
+        .send({
+          user: returnUser,
+          token
+        })
+        .end();
+    } else {
+      const newUser = {
+        uid: uuidv4(),
+        first_name: given_name,
+        last_name: family_name,
+        email: req.body.email,
+        avatar: picture
+      };
+      const created = await User.create({
+        ...newUser,
+        // TBC
+        password: id
+      });
+      const token = Token.sign({ ...newUser, id: created.id });
+      res
+        .status(200)
+        .send({
+          user: newUser,
+          token
+        })
+        .end();
+    }
+  } catch (err) {
+    console.log(err.message);
     res
       .status(500)
       .send(err.message)
