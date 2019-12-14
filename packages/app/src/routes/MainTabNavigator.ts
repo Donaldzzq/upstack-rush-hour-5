@@ -2,10 +2,13 @@ import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createStackNavigator } from "react-navigation-stack";
 
 import { HomeNavigator } from "./HomeNavigator";
+import { ROUTES } from "./Routes";
+import { MapNavigator } from "./MapNavigator";
 
 const BottomTab = createBottomTabNavigator(
   {
-    Home: HomeNavigator
+    [ROUTES.main.map]: MapNavigator,
+    [ROUTES.main.home]: HomeNavigator
   },
   {
     tabBarOptions: {
@@ -17,7 +20,8 @@ const BottomTab = createBottomTabNavigator(
         elevation: 5,
         borderTopColor: "transparent"
       }
-    }
+    },
+    initialRouteName: ROUTES.main.map
   }
 );
 

@@ -5,7 +5,10 @@ const AUTH_ROUTES = {
 };
 
 const MAIN_ROUTES = {
-  main: "Main"
+  main: "Main",
+  home: "Home",
+  map: "Map",
+  message: "Message"
 };
 
 export const ROUTES = {
