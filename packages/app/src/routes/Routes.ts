@@ -6,9 +6,15 @@ const AUTH_ROUTES = {
 
 const MAIN_ROUTES = {
   main: "Main",
+
+  // Tab
+  tab: "Tab",
   me: "Me",
   map: "Map",
-  message: "Message"
+  message: "Message",
+
+  //
+  chat: "Chat"
 };
 
 export const ROUTES = {

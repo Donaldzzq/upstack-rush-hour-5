@@ -4,10 +4,13 @@ import { createStackNavigator } from "react-navigation-stack";
 import { MeNavigator } from "./MeNavigator";
 import { ROUTES } from "./Routes";
 import { MapNavigator } from "./MapNavigator";
+import { Chat } from "../screens/Main/Chat";
+import { MessageNavigator } from "./MessageNavigator";
 
 const BottomTab = createBottomTabNavigator(
   {
     [ROUTES.main.map]: MapNavigator,
+    [ROUTES.main.message]: MessageNavigator,
     [ROUTES.main.me]: MeNavigator
   },
   {
@@ -27,7 +30,8 @@ const BottomTab = createBottomTabNavigator(
 
 export default createStackNavigator(
   {
-    BottomTab
+    [ROUTES.main.tab]: BottomTab,
+    [ROUTES.main.chat]: Chat
   },
   { headerMode: "none" }
 );

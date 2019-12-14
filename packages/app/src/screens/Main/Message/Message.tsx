@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { View, FlatList, Text, StyleSheet, Image } from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps";
 import { ListItem } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 
@@ -28,19 +27,10 @@ const list = [
   }
 ];
 
-class Map extends Component<Props, State> {
+class Message extends Component<Props, State> {
   state = {};
 
-  map = React.createRef<MapView>();
-
-  componentDidMount = () => {
-    this.map.current.animateToRegion({
-      latitude: 22.5431,
-      longitude: 114.0579,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1
-    });
-  };
+  componentDidMount = () => {};
 
   extractItemKey = item => {
     return item.name;
@@ -64,35 +54,12 @@ class Map extends Component<Props, State> {
   };
 
   renderListHeader = () => {
-    return <Text style={styles.title}>People in </Text>;
+    return null;
   };
 
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <MapView ref={this.map} style={{ flex: 2 }}>
-          {list.map(item => (
-            <Marker
-              key={item.name}
-              coordinate={{
-                latitude: item.latitude,
-                longitude: item.longitude
-              }}
-              onCalloutPress={this.gotoUser(item)}
-            >
-              <View style={styles.markerContainer}>
-                <Image
-                  style={styles.markerAvatar}
-                  source={{ uri: item.avatar_url }}
-                />
-              </View>
-
-              <Callout>
-                <Text style={styles.markerText}>{item.name}</Text>
-              </Callout>
-            </Marker>
-          ))}
-        </MapView>
         <FlatList
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
@@ -125,4 +92,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export { Map };
+export { Message };
