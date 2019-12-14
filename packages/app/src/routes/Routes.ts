@@ -14,7 +14,8 @@ const MAIN_ROUTES = {
   message: "Message",
 
   //
-  chat: "Chat"
+  chat: "Chat",
+  profile: "Profile",
 };
 
 export const ROUTES = {

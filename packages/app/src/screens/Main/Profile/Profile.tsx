@@ -1,44 +1,46 @@
 import React, { Component } from "react";
-import { View, Image, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  Modal,
+  TouchableHighlight,
+  TouchableOpacity,
+  FlatList,
+  Alert,
+  Picker
+} from "react-native";
 import {
   Button,
   Input,
   ListItem,
   Card,
   Text,
-  Icon
+  Icon,
+  Divider
 } from "react-native-elements";
+import { NavigationStackProp } from "react-navigation-stack";
 
-interface Props {}
+interface Props {
+  navigation: NavigationStackProp;
+}
 interface State {
   userName: String;
-  location: String;
   placesVisitedAmount: Number;
   friendsMadeAmount: Number;
+  location: String;
+  spareRooms: Number;
+  bioHobbies: String;
+  wishLists: String;
+  modalVisible: Boolean;
 }
-
-// <ListItem
-//             leftAvatar={<Icon name="message" type="material"></Icon>}
-//             title={"Messages"}
-//             bottomDivider
-//           />
-//           <ListItem
-//             leftAvatar={<Icon name="message" type="material"></Icon>}
-//             title="Where To Next?"
-//             bottomDivider
-//           />
-//           <ListItem
-//            leftAvatar={<Icon name="adduser" type="antdesign"></Icon>}
-//             title="Invite"
-//             bottomDivider
-//           />
 
 const list = [
   {
-  title: "Profile",
-  iconName: "profile",
-  iconType: "antdesign"
-},
+    title: "Location",
+    iconName: "profile",
+    iconType: "antdesign"
+  },
   {
     title: "Messages",
     iconName: "message",
@@ -59,15 +61,23 @@ const list = [
 class Profile extends Component<Props, State> {
   state = {
     userName: "Jennifer Lawerance",
-    location: "Room 1, Shenzhen, China",
     placesVisitedAmount: 0,
-    friendsMadeAmount: 0
+    friendsMadeAmount: 0,
+    location: "Room 1, Shenzhen, China",
+    spareRooms: 0,
+    bioHobbies: "",
+    wishLists: "",
+    modalVisible: false
+  };
+
+  closeModal = () => {
+    this.setState({ modalVisible: false });
   };
 
   renderItem = ({ item }) => {
     return (
       <ListItem
-        //onPress={this.gotoUser(item)}
+        //onPress={this.setModalVisible(true)}
         leftAvatar={<Icon name={item.iconName} type={item.iconType}></Icon>}
         title={item.title}
         subtitle={item.subtitle}
@@ -85,8 +95,40 @@ class Profile extends Component<Props, State> {
     return null;
   };
 
+  locationChange = text => {
+    this.setState({ location: text });
+  };
+
+  spareRoomsChange = text => {
+    if (/^\d+$/.test(text)) {
+      this.setState({
+        spareRooms: parseInt(text,10)
+      });
+    }else{
+      this.setState({ spareRooms: 0});
+    }
+  };
+
+  bioHobbiesChange = text => {
+    this.setState({ bioHobbies: text });
+  };
+
+  wishListsChange = text => {
+    this.setState({ wishLists: text });
+  };
+
+  saveData = () => {};
+
   render() {
-    const { userName, placesVisitedAmount, friendsMadeAmount } = this.state;
+    const {
+      userName,
+      placesVisitedAmount,
+      friendsMadeAmount,
+      location,
+      spareRooms,
+      bioHobbies,
+      wishLists
+    } = this.state;
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.container}>
@@ -120,14 +162,84 @@ class Profile extends Component<Props, State> {
               </Text>
             </View>
           </View>
+          <Card
+            containerStyle={{
+              padding: 0,
+              width:"95%",
+              marginTop:20,
+              marginBottom:20,
+            }}
+          >
+            <Input
+              placeholder="Input your location"
+              leftIcon={{ type: "entypo", name: "location" }}
+              label="Location"
+              leftIconContainerStyle={{ marginRight: 10 }}
+              containerStyle={{ marginBottom: 20 }}
+              value={location}
+              onChangeText={text => this.locationChange(text)}
+            />
+            <Input
+              placeholder="Input your spare rooms amount"
+              leftIcon={{ type: "ionicon", name: "md-bed" }}
+              label="Spare Rooms"
+              leftIconContainerStyle={{ marginRight: 10 }}
+              containerStyle={{ marginBottom: 20 }}
+              value={spareRooms.toString()}
+              keyboardType={'numeric'}
+              onChangeText={text => this.spareRoomsChange(text)}
+            />
+            <Input
+              placeholder="Input your biological hobbies"
+              leftIcon={{ type: "material", name: "person" }}
+              label="Bio"
+              leftIconContainerStyle={{ marginRight: 10 }}
+              containerStyle={{ marginBottom: 20 }}
+              value={bioHobbies}
+              onChangeText={text => this.bioHobbiesChange(text)}
+            />
+            <Input
+              placeholder="Input your wishlists for customers"
+              leftIcon={{ type: "material", name: "lightbulb-outline" }}
+              label="Wishlists"
+              leftIconContainerStyle={{ marginRight: 10 }}
+              containerStyle={{ marginBottom: 20 }}
+              value={wishLists}
+              onChangeText={text => this.wishListsChange(text)}
+            />
+          </Card>
+          <TouchableOpacity>
+            <Button
+              title="Save"
+              icon={<Icon name="save" type="antdesign" color="white" />}
+            />
+          </TouchableOpacity>
         </View>
-        <FlatList
+        {/* <FlatList
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
           renderItem={this.renderItem}
           data={list}
           style={{ flex: 1 }}
         />
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            alert("Modal has been closed.");
+          }}
+        >
+          <View style={{ marginTop: 22 }}>
+            <View>
+              <Text>Hello World!</Text>
+
+              <TouchableHighlight onPress={this.closeModal}>
+                <Icon name="close" type="AntDesign" />
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal> */}
       </View>
     );
   }
@@ -147,10 +259,10 @@ const styles = StyleSheet.create({
   information: {
     justifyContent: "flex-start",
     flexDirection: "row",
-    alignItems:"flex-start"
+    alignItems: "flex-start"
   },
   showAmount: {
-    marginLeft:10,
+    marginLeft: 10
   },
   showAmountText: {
     marginTop: 12,

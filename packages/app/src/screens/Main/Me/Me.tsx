@@ -8,8 +8,12 @@ import {
   Text,
   Icon
 } from "react-native-elements";
+import { NavigationStackProp } from "react-navigation-stack";
 
-interface Props {}
+interface Props {
+  navigation: NavigationStackProp;
+}
+
 interface State {
   userName: String;
   location: String;
@@ -17,42 +21,30 @@ interface State {
   friendsMadeAmount: Number;
 }
 
-// <ListItem
-//             leftAvatar={<Icon name="message" type="material"></Icon>}
-//             title={"Messages"}
-//             bottomDivider
-//           />
-//           <ListItem
-//             leftAvatar={<Icon name="message" type="material"></Icon>}
-//             title="Where To Next?"
-//             bottomDivider
-//           />
-//           <ListItem
-//            leftAvatar={<Icon name="adduser" type="antdesign"></Icon>}
-//             title="Invite"
-//             bottomDivider
-//           />
-
 const list = [
   {
-  title: "Profile",
-  iconName: "profile",
-  iconType: "antdesign"
-},
+    title: "Profile",
+    iconName: "profile",
+    iconType: "antdesign",
+    navigatePage: "Profile"
+  },
   {
     title: "Messages",
     iconName: "message",
-    iconType: "material"
+    iconType: "material",
+    navigatePage: "Message"
   },
   {
     title: "Where To Next?",
     iconName: "local-airport",
-    iconType: "material"
+    iconType: "material",
+    navigatePage: "Map"
   },
   {
     title: "Invite",
     iconName: "adduser",
-    iconType: "antdesign"
+    iconType: "antdesign",
+    navigatePage: "Profile"
   }
 ];
 
@@ -64,10 +56,14 @@ class Me extends Component<Props, State> {
     friendsMadeAmount: 0
   };
 
+  goTo = navigatePage => () => {
+    this.props.navigation.navigate(navigatePage);
+  };
+
   renderItem = ({ item }) => {
     return (
       <ListItem
-        //onPress={this.gotoUser(item)}
+        onPress={this.goTo(item.navigatePage)}
         leftAvatar={<Icon name={item.iconName} type={item.iconType}></Icon>}
         title={item.title}
         subtitle={item.subtitle}
@@ -147,10 +143,10 @@ const styles = StyleSheet.create({
   information: {
     justifyContent: "flex-start",
     flexDirection: "row",
-    alignItems:"flex-start"
+    alignItems: "flex-start"
   },
   showAmount: {
-    marginLeft:10,
+    marginLeft: 10
   },
   showAmountText: {
     marginTop: 12,
