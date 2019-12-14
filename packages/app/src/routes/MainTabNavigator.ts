@@ -24,7 +24,7 @@ const BottomTab = createBottomTabNavigator(
         borderTopColor: "transparent"
       }
     },
-    initialRouteName: ROUTES.main.map
+    initialRouteName: ROUTES.main.me
   }
 );
 

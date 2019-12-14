@@ -46,7 +46,7 @@ const list = [
   },
   {
     title: "Where To Next?",
-    iconName: "local-airport",
+    iconName: "message",
     iconType: "material"
   },
   {
@@ -56,7 +56,7 @@ const list = [
   }
 ];
 
-class Me extends Component<Props, State> {
+class Profile extends Component<Props, State> {
   state = {
     userName: "Jennifer Lawerance",
     location: "Room 1, Shenzhen, China",
@@ -186,4 +186,4 @@ const styles = StyleSheet.create({
     color: "red"
   }
 });
-export { Me };
+export { Profile };
