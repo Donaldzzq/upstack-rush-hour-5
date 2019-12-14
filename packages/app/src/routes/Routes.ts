@@ -6,7 +6,7 @@ const AUTH_ROUTES = {
 
 const MAIN_ROUTES = {
   main: "Main",
-  home: "Home",
+  me: "Me",
   map: "Map",
   message: "Message"
 };

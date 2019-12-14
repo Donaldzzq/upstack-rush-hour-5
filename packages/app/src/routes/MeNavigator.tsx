@@ -3,13 +3,13 @@ import { createStackNavigator } from "react-navigation-stack";
 import { Platform, View } from "react-native";
 
 import { TabBarIcon } from "../components/TabBarIcon";
-import { Home } from "../screens/Main/Home";
+import { Me } from "../screens/Main/Me";
 
-const HomeNavigator = createStackNavigator({
-  Home
+const MeNavigator = createStackNavigator({
+  Me
 });
 
-HomeNavigator.navigationOptions = {
+MeNavigator.navigationOptions = {
   tabBarLabel: "Me",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -17,7 +17,7 @@ HomeNavigator.navigationOptions = {
       name={Platform.OS === "ios" ? "ios-person" : "md-person"}
     />
   ),
-  tabBarTestID: "Home Tab"
+  tabBarTestID: "Me Tab"
 };
 
-export { HomeNavigator };
+export { MeNavigator };

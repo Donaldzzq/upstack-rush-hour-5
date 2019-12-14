@@ -4,16 +4,16 @@ import { View, Text } from "react-native";
 interface Props {}
 interface State {}
 
-class Home extends Component<Props, State> {
+class Me extends Component<Props, State> {
   state = {};
 
   render() {
     return (
       <View>
-        <Text>Home</Text>
+        <Text>Me</Text>
       </View>
     );
   }
 }
 
-export { Home };
+export { Me };

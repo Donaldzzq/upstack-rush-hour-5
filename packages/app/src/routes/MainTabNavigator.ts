@@ -1,14 +1,14 @@
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createStackNavigator } from "react-navigation-stack";
 
-import { HomeNavigator } from "./HomeNavigator";
+import { MeNavigator } from "./MeNavigator";
 import { ROUTES } from "./Routes";
 import { MapNavigator } from "./MapNavigator";
 
 const BottomTab = createBottomTabNavigator(
   {
     [ROUTES.main.map]: MapNavigator,
-    [ROUTES.main.home]: HomeNavigator
+    [ROUTES.main.me]: MeNavigator
   },
   {
     tabBarOptions: {
