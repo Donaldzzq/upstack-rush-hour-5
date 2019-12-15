@@ -1,7 +1,25 @@
 import React from "react";
+import {
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView
+} from "react-native";
+import {
+  Button,
+  Input,
+  ListItem,
+  Card,
+  Text,
+  Icon,
+  Divider
+} from "react-native-elements";
+import { NavigationStackProp } from "react-navigation-stack";
 import { GiftedChat } from "react-native-gifted-chat";
 
-interface Props {}
+interface Props {
+  navigation: NavigationStackProp;}
 
 interface State {
   messages: any[];
@@ -37,6 +55,13 @@ class Chat extends React.Component<Props, State> {
 
   render() {
     return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.buttonGoBack}>
+          <TouchableOpacity onPress={() => this.props.navigation.goBack(null)}>
+            <Icon name="ios-arrow-back" type="ionicon" />
+          </TouchableOpacity>
+        </View>
+        <Divider />
       <GiftedChat
         messages={this.state.messages}
         onSend={messages => this.onSend(messages)}
@@ -44,8 +69,19 @@ class Chat extends React.Component<Props, State> {
           _id: 1
         }}
       />
+      </SafeAreaView>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  buttonGoBack: {
+    flexGrow: 0,
+    paddingLeft: "5%",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom:10
+  },
+});
 
 export { Chat };

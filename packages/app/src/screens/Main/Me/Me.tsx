@@ -6,7 +6,8 @@ import {
   ListItem,
   Card,
   Text,
-  Icon
+  Icon,
+  Divider
 } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 
@@ -26,7 +27,7 @@ const list = [
     title: "Profile",
     iconName: "profile",
     iconType: "antdesign",
-    navigatePage: "Profile"
+    navigatePage: "UserProfile"
   },
   {
     title: "Messages",
@@ -117,6 +118,7 @@ class Me extends Component<Props, State> {
             </View>
           </View>
         </View>
+        <Divider />
         <FlatList
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
@@ -131,7 +133,9 @@ class Me extends Component<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 0,
+    marginTop: 30,
+    marginBottom: 50,
     justifyContent: "center",
     alignItems: "center"
   },
