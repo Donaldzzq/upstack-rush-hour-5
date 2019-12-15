@@ -208,13 +208,19 @@ class Profile extends Component<Props, State> {
               onChangeText={text => this.wishListsChange(text)}
             />
           </Card>
+          <View style={styles.buttonRow}>
+          <TouchableOpacity onPress={() => this.props.navigation.goBack(null)}>
+            <Icon name="ios-arrow-back" type="ionicon" />
+          </TouchableOpacity>
           <TouchableOpacity>
             <Button
               title="Save"
               icon={<Icon name="save" type="antdesign" color="white" />}
             />
           </TouchableOpacity>
+          </View>
         </View>
+
         {/* <FlatList
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
@@ -270,11 +276,10 @@ const styles = StyleSheet.create({
     color: "grey"
   },
   buttonRow: {
-    width: "100%",
+    width: "90%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10
   },
   loginButton: {
     width: "100%",

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { View, FlatList, Text, StyleSheet, Image } from "react-native";
-import { ListItem } from "react-native-elements";
+import { View, FlatList, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { ListItem, Icon } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 
 interface Props {
@@ -60,6 +60,9 @@ class Message extends Component<Props, State> {
   render() {
     return (
       <View style={{ flex: 1 }}>
+        {/* <TouchableOpacity onPress={() => this.props.navigation.goBack(null)}>
+            <Icon name="ios-arrow-back" type="ionicon" />
+          </TouchableOpacity> */}
         <FlatList
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
