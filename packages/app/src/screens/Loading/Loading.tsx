@@ -8,14 +8,25 @@ import {
 } from "react-native";
 import { ROUTES, ROOT_ROUTES } from "../../routes/Routes";
 import { NavigationStackProp } from "react-navigation-stack";
+import { inject, observer } from "mobx-react";
+import { AuthStore } from "../../store/AuthStore";
 
 interface Props {
+  authStore: AuthStore;
   navigation: NavigationStackProp;
 }
 
-class Loading extends React.Component<Props> {
+class LoadingComponent extends React.Component<Props> {
   async componentDidMount() {
-    this.props.navigation.navigate(ROUTES.auth.login);
+    const { authStore } = this.props;
+
+    const authed = await authStore.authenticate();
+
+    if (authed) {
+      this.props.navigation.navigate(ROUTES.main.main);
+    } else {
+      this.props.navigation.navigate(ROUTES.auth.welcome);
+    }
   }
 
   render() {
@@ -37,5 +48,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   }
 });
+
+const Loading = inject("authStore")(observer(LoadingComponent));
 
 export { Loading };

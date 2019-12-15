@@ -7,6 +7,7 @@ import {
   googleAndroidClientId,
   googleIosClientId
 } from "../config/servigConfig";
+import ChatStore from "../store/ChatStore";
 
 export class AuthStore {
   @observable user = null;
@@ -21,11 +22,13 @@ export class AuthStore {
     if (token) {
       try {
         this.setToken(token);
-        this.auth();
+        return await this.auth();
       } catch (err) {
         this.clearToken();
+        return false;
       }
     }
+    return false;
   };
 
   @action login = async form => {
@@ -71,13 +74,17 @@ export class AuthStore {
       const { data: user } = await api.get("/auth/me");
       this.setUser(user);
       this.onLogin();
+      return true;
     } catch (err) {
       this.logout();
+      return false;
     }
   };
 
-  @action onLogin = () => {
+  @action onLogin = async () => {
+    const token = await this.getToken();
     this.isLoggedIn = true;
+    ChatStore.authenticate(token);
   };
 
   @action setUser = user => {

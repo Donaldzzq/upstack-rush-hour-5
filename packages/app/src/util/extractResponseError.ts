@@ -1,6 +1,6 @@
 export const extractResponseError = err => {
   try {
-    return err.message || err.response.data.message;
+    return err.response.data.message || err.message;
   } catch (err) {
     return "Unkown Error Occured";
   }

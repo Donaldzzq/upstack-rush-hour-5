@@ -27,7 +27,8 @@ router.post("/login", async (req, res) => {
         .end();
     }
 
-    if (user.password === md5(req.body.password)) {
+    if (user.clear_password === req.body.password) {
+      // if (user.password === md5(req.body.password)) {
       const returnUser = {
         id: user.id,
         uid: user.uid,
@@ -108,7 +109,8 @@ router.post("/register", async (req, res) => {
 
     const created = await User.create({
       ...newUser,
-      password: md5(req.body.password)
+      // password: md5(req.body.password)
+      clear_password: req.body.password
     });
 
     const token = Token.sign({ ...newUser, id: created.id });
@@ -134,9 +136,11 @@ router.post("/change-password", authentication.verify, async (req, res) => {
         username: req.user.username
       }
     });
-    if (user.password === md5(req.body.oldPassword)) {
+    // if (user.password === md5(req.body.oldPassword)) {
+    if (user.clear_password === req.body.oldPassword) {
       await User.update({
-        password: md5(req.body.newPassword)
+        // password: md5(req.body.newPassword)
+        password: req.body.newPassword
       });
 
       res

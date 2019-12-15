@@ -10,14 +10,45 @@ interface Props {
   navigation: NavigationStackProp;
   authStore: AuthStore;
 }
-interface State {}
+interface State {
+  form: {
+    email: string;
+    password: string;
+  };
+  errorMessage: string;
+}
 
 class LoginComponent extends Component<Props, State> {
   state = {
-    errorMessage: ""
+    errorMessage: "",
+    form: {
+      email: "",
+      password: ""
+    }
+  };
+
+  handleChange = field => text => {
+    this.setState(prevState => ({
+      form: {
+        ...prevState.form,
+        [field]: text
+      }
+    }));
   };
 
   componentDidMount = () => {};
+
+  login = async () => {
+    const result = await this.props.authStore.login(this.state.form);
+
+    if (result.success) {
+      this.props.navigation.navigate("Main");
+    } else {
+      this.setState({
+        errorMessage: result.error
+      });
+    }
+  };
 
   googleLogin = async () => {
     const response = await this.props.authStore.googleLogin();
@@ -31,7 +62,10 @@ class LoginComponent extends Component<Props, State> {
   };
 
   render() {
-    const { errorMessage } = this.state;
+    const {
+      errorMessage,
+      form: { email, password }
+    } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAwareScrollView style={{ flex: 1 }}>
@@ -54,6 +88,8 @@ class LoginComponent extends Component<Props, State> {
             />
             <Text style={styles.title}>Login</Text>
             <Input
+              value={email}
+              onChangeText={this.handleChange("email")}
               containerStyle={styles.form}
               inputStyle={styles.input}
               label="Your email address"
@@ -61,7 +97,9 @@ class LoginComponent extends Component<Props, State> {
               leftIcon={{ type: "font-awesome", name: "user" }}
             />
             <Input
+              value={password}
               secureTextEntry
+              onChangeText={this.handleChange("password")}
               containerStyle={styles.form}
               inputStyle={styles.input}
               label="Password"
@@ -73,9 +111,7 @@ class LoginComponent extends Component<Props, State> {
             ) : null}
             <View style={styles.buttonRow}>
               <Button
-                onPress={() => {
-                  this.props.navigation.navigate("Main");
-                }}
+                onPress={this.login}
                 containerStyle={styles.loginButton}
                 title="Login"
               />

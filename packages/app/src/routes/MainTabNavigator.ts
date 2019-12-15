@@ -6,7 +6,7 @@ import { ROUTES } from "./Routes";
 import { MapNavigator } from "./MapNavigator";
 import { Chat } from "../screens/Main/Chat";
 import { MessageNavigator } from "./MessageNavigator";
-import { Profile } from "../screens/Main/Profile"
+import { Profile } from "../screens/Main/Profile";
 
 const BottomTab = createBottomTabNavigator(
   {
@@ -25,7 +25,7 @@ const BottomTab = createBottomTabNavigator(
         borderTopColor: "transparent"
       }
     },
-    initialRouteName: ROUTES.main.me
+    initialRouteName: ROUTES.main.map
   }
 );
 
@@ -33,7 +33,7 @@ export default createStackNavigator(
   {
     [ROUTES.main.tab]: BottomTab,
     [ROUTES.main.chat]: Chat,
-    [ROUTES.main.profile]: Profile,
+    [ROUTES.main.profile]: Profile
   },
   { headerMode: "none" }
 );

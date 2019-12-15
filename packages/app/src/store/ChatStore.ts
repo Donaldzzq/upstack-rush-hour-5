@@ -1,5 +1,4 @@
 import { observable, action } from "mobx";
-import authStore from "./AuthStore";
 const io = require("socket.io-client");
 
 export class ChatStore {
@@ -19,8 +18,7 @@ export class ChatStore {
     this.socket.on("message", () => {});
   }
 
-  @action authenticate = async () => {
-    const token = await authStore.getToken();
+  @action authenticate = async token => {
     this.socket.emit("auth", {
       token
     });
