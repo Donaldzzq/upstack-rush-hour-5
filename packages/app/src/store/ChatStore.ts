@@ -1,8 +1,11 @@
 import { observable, action } from "mobx";
+import { api } from "../config/api";
 const io = require("socket.io-client");
 
 export class ChatStore {
   @observable user = null;
+
+  @observable users = [];
 
   socket;
 
@@ -22,6 +25,11 @@ export class ChatStore {
     this.socket.emit("auth", {
       token
     });
+  };
+
+  @action updateMessages = async uid => {
+    const { data: usersRaw } = await api.get(`/message/latest/${uid}`);
+    this.users = usersRaw;
   };
 }
 

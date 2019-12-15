@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = function(models) {
     models.User.hasOne(models.Location, {
-      foreignKey: "user_uid"
+      foreignKey: "user_uid",
+      sourceKey: "uid"
     });
   };
 

@@ -21,7 +21,12 @@ router.get(
 router.get(
   "/:user_id",
   asyncError(async (req, res, next) => {
-    res.send(await User.findOne({ where: { id: req.params.user_id } }));
+    res.send(
+      await User.findOne({
+        include: [{ model: Location }],
+        where: { id: req.params.user_id }
+      })
+    );
   })
 );
 

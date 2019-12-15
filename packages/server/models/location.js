@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
 
   Location.associate = function(models) {
     models.Location.belongsTo(models.User, {
-      foreignKey: "user_uid"
+      foreignKey: "user_uid",
+      targetKey: "uid"
     });
   };
 

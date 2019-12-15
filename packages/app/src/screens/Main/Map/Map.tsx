@@ -15,8 +15,11 @@ import { ListItem, Icon } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 import CountryPicker, {
   Country,
-  CountryCode
+  CountryCode,
+  getAllCountries
 } from "react-native-country-picker-modal";
+import { api } from "../../../config/api";
+import { ROUTES } from "../../../routes/Routes";
 //import { CountryCode, Country } from './src/types'
 
 interface Props {
@@ -26,42 +29,85 @@ interface State {
   modalVisible: Boolean;
   countryCode: CountryCode;
   country: Object;
+  users: any[];
+  availableCountries: string[];
 }
 
-const list = [
-  {
-    name: "Amy Farha",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-    subtitle: "Frontend Dev",
-    latitude: 22.6831,
-    longitude: 114.0579
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Backend Dev",
-    latitude: 22.6431,
-    longitude: 114.0579
-  }
-];
+// const list = [
+//   {
+//     name: "Amy Farha",
+//     avatar_url:
+//       "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
+//     subtitle: "Frontend Dev",
+//     latitude: 22.6831,
+//     longitude: 114.0579
+//   },
+//   {
+//     name: "Chris Jackson",
+//     avatar_url:
+//       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
+//     subtitle: "Backend Dev",
+//     latitude: 22.6431,
+//     longitude: 114.0579
+//   }
+// ];
 
 class Map extends Component<Props, State> {
   state = {
     modalVisible: false,
     countryCode: null,
-    country: {}
+    country: {},
+    users: [],
+    availableCountries: ["US", "GB"]
   };
 
   map = React.createRef<MapView>();
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.map.current.animateToRegion({
       latitude: 22.5431,
       longitude: 114.0579,
       latitudeDelta: 0.1,
       longitudeDelta: 0.1
+    });
+
+    this.getLocation("United Kingdom");
+  };
+
+  getLocation = async (country, city?) => {
+    const { data } = await api.get(`/location`, {
+      params: {
+        country,
+        city
+      }
+    });
+
+    this.setState({
+      users: data.map(user => ({
+        latitude: user.latitude,
+        longitude: user.longitude,
+        name: user.User.first_name + user.User.last_name,
+        avatar_url: user.User.avatar,
+        id: user.id
+      }))
+    });
+
+    this.onMarkers(data);
+  };
+
+  onMarkers = markers => {
+    const markersLatLng = markers.map(marker => ({
+      latitude: marker.latitude,
+      longitude: marker.longitude
+    }));
+    this.map.current.fitToCoordinates(markersLatLng, {
+      edgePadding: {
+        top: 50,
+        right: 50,
+        bottom: 50,
+        left: 50
+      },
+      animated: false
     });
   };
 
@@ -70,7 +116,9 @@ class Map extends Component<Props, State> {
   };
 
   gotoUser = user => () => {
-    this.props.navigation.navigate("Chat");
+    this.props.navigation.navigate(ROUTES.main.userprofile, {
+      id: user.id
+    });
   };
 
   renderItem = ({ item }) => {
@@ -87,7 +135,7 @@ class Map extends Component<Props, State> {
   };
 
   renderListHeader = () => {
-    return null //<Text style={styles.title}>People in Shenzhen</Text>;
+    return null; //<Text style={styles.title}>People in Shenzhen</Text>;
   };
 
   setModalVisible(visible) {
@@ -95,11 +143,15 @@ class Map extends Component<Props, State> {
   }
 
   onSelect = (country: Country) => {
-    this.setState({ countryCode: country.cca2, country: country });
+    this.setState({
+      countryCode: country.cca2,
+      country: country
+    });
+    this.getLocation(country.name);
   };
 
   render() {
-    const { modalVisible } = this.state;
+    const { modalVisible, users, countryCode, availableCountries } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchButton}>
@@ -107,7 +159,8 @@ class Map extends Component<Props, State> {
             <Icon name="map-search-outline" type="material-community" />
           </TouchableOpacity>
           <CountryPicker
-            countryCode={this.state.countryCode}
+            countryCodes={availableCountries}
+            countryCode={countryCode}
             withFlag
             withFilter
             withEmoji={false}
@@ -119,7 +172,7 @@ class Map extends Component<Props, State> {
           />
         </View>
         <MapView ref={this.map} style={{ flex: 2 }}>
-          {list.map(item => (
+          {users.map(item => (
             <Marker
               key={item.name}
               coordinate={{
@@ -145,7 +198,7 @@ class Map extends Component<Props, State> {
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
           renderItem={this.renderItem}
-          data={list}
+          data={users}
           style={{ flex: 1 }}
         />
       </SafeAreaView>
@@ -164,7 +217,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginVertical:20
+    marginVertical: 20
   },
   markerContainer: {
     borderRadius: 20,

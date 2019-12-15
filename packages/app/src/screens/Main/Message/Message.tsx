@@ -1,43 +1,41 @@
 import React, { Component } from "react";
-import { View, FlatList, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  FlatList,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity
+} from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
+import { api } from "../../../config/api";
+import { AuthStore } from "../../../store/AuthStore";
+import { inject, observer } from "mobx-react";
+import { ROUTES } from "../../../routes/Routes";
+import { ChatStore } from "../../../store/ChatStore";
 
 interface Props {
+  authStore: AuthStore;
+  chatStore: ChatStore;
   navigation: NavigationStackProp;
 }
 interface State {}
 
-const list = [
-  {
-    name: "Amy Farha",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-    subtitle: "Vice President",
-    latitude: 22.6831,
-    longitude: 114.0579
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
-    latitude: 22.6431,
-    longitude: 114.0579
-  }
-];
-
-class Message extends Component<Props, State> {
-  state = {};
-
-  componentDidMount = () => {};
+class MessageComponent extends Component<Props, State> {
+  componentDidMount = async () => {
+    const { authStore, chatStore } = this.props;
+    chatStore.updateMessages(authStore.user.uid);
+  };
 
   extractItemKey = item => {
     return item.name;
   };
 
   gotoUser = user => () => {
-    this.props.navigation.navigate("Chat");
+    this.props.navigation.navigate(ROUTES.main.chat, {
+      uid: user.uid
+    });
   };
 
   renderItem = ({ item }) => {
@@ -58,6 +56,15 @@ class Message extends Component<Props, State> {
   };
 
   render() {
+    const { chatStore } = this.props;
+    const users = chatStore.users.map(user => ({
+      name: user.first_name + user.last_name,
+      avatar_url: user.avatar,
+      id: user.user_id,
+      uid: user.user_uid,
+      subtitle: user.body
+    }));
+
     return (
       <View style={{ flex: 1 }}>
         {/* <TouchableOpacity onPress={() => this.props.navigation.goBack(null)}>
@@ -67,7 +74,7 @@ class Message extends Component<Props, State> {
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
           renderItem={this.renderItem}
-          data={list}
+          data={users}
           style={{ flex: 1 }}
         />
       </View>
@@ -94,5 +101,7 @@ const styles = StyleSheet.create({
     textAlign: "center"
   }
 });
+
+const Message = inject("authStore", "chatStore")(observer(MessageComponent));
 
 export { Message };

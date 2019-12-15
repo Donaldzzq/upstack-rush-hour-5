@@ -14,7 +14,19 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Message.associate = function(models) {};
+  Message.associate = function(models) {
+    models.Message.belongsTo(models.User, {
+      foreignKey: "from_uid",
+      targetKey: "uid",
+      as: "fromUser"
+    });
+
+    models.Message.belongsTo(models.User, {
+      foreignKey: "to_uid",
+      targetKey: "uid",
+      as: "toUser"
+    });
+  };
 
   return Message;
 };

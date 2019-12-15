@@ -15,9 +15,15 @@ import {
   Divider
 } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
+import { api } from "../../../config/api";
+import { ROUTES } from "../../../routes/Routes";
+import { FlagType } from "react-native-country-picker-modal";
+import { inject, observer } from "mobx-react";
+import { AuthStore } from "../../../store/AuthStore";
 
 interface Props {
   navigation: NavigationStackProp;
+  authStore: AuthStore;
 }
 interface State {
   userName: String;
@@ -28,18 +34,39 @@ interface State {
   bioHobbies: String;
   wishLists: String;
   modalVisible: Boolean;
+  userAvatar: String;
+  uid: String;
+  isSelf: boolean;
 }
 
-class UserProfile extends Component<Props, State> {
+class UserProfileComponent extends Component<Props, State> {
   state = {
-    userName: "Jennifer Lawerance",
+    userName: "",
     placesVisitedAmount: 0,
     friendsMadeAmount: 0,
-    location: "Room 1, Shenzhen, China",
+    location: "",
     spareRooms: 0,
-    bioHobbies: "Night Owl",
-    wishLists: "Beautiful Girls",
-    modalVisible: false
+    bioHobbies: "",
+    wishLists: "",
+    modalVisible: false,
+    userAvatar: "",
+    uid: "",
+    isSelf: false
+  };
+
+  componentDidMount = async () => {
+    const { navigation, authStore } = this.props;
+    const id = navigation.getParam("id");
+    const { data: user } = await api.get(`user/${id}`);
+
+    this.setState({
+      userName: `${user.first_name} ${user.last_name}`,
+      location: `${user.Location.country} ${user.Location.city}`,
+      spareRooms: user.Location.spare_rooms,
+      userAvatar: user.avatar,
+      uid: user.uid,
+      isSelf: authStore.user.id === id
+    });
   };
 
   locationChange = text => {
@@ -64,6 +91,8 @@ class UserProfile extends Component<Props, State> {
     this.setState({ wishLists: text });
   };
 
+  saveProfile = () => {};
+
   saveData = () => {};
 
   render() {
@@ -74,7 +103,10 @@ class UserProfile extends Component<Props, State> {
       location,
       spareRooms,
       bioHobbies,
-      wishLists
+      wishLists,
+      userAvatar,
+      uid,
+      isSelf
     } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -96,14 +128,15 @@ class UserProfile extends Component<Props, State> {
           {/* <Text style={styles.title}>Dashboard</Text> */}
           <View style={styles.information}>
             <View>
-              <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
-                //resizeMode="contain"
-                source={{
-                  uri:
-                    "https://akns-images.eonline.com/eol_images/Entire_Site/2019822/rs_1024x759-190922200817-1024-jennifer-lawrence-amazon.jpg?fit=inside|900:auto&output-quality=90"
-                }}
-              />
+              {userAvatar !== "" ? (
+                <Image
+                  style={{ width: 100, height: 100, borderRadius: 10 }}
+                  //resizeMode="contain"
+                  source={{
+                    uri: userAvatar
+                  }}
+                />
+              ) : null}
             </View>
             <View style={styles.showAmount}>
               <Text h4>{userName}</Text>
@@ -125,6 +158,7 @@ class UserProfile extends Component<Props, State> {
             }}
           >
             <Input
+              disabled
               placeholder="Input your location"
               leftIcon={{ type: "entypo", name: "location" }}
               label="Location"
@@ -134,6 +168,7 @@ class UserProfile extends Component<Props, State> {
               onChangeText={text => this.locationChange(text)}
             />
             <Input
+              disabled={!isSelf}
               placeholder="Input your spare rooms amount"
               leftIcon={{ type: "ionicon", name: "md-bed" }}
               label="Spare Rooms"
@@ -144,6 +179,7 @@ class UserProfile extends Component<Props, State> {
               onChangeText={text => this.spareRoomsChange(text)}
             />
             <Input
+              disabled={!isSelf}
               placeholder="Input your biological hobbies"
               leftIcon={{ type: "material", name: "person" }}
               label="Bio"
@@ -153,6 +189,7 @@ class UserProfile extends Component<Props, State> {
               onChangeText={text => this.bioHobbiesChange(text)}
             />
             <Input
+              disabled={!isSelf}
               placeholder="Input your wishlists for customers"
               leftIcon={{ type: "material", name: "lightbulb-outline" }}
               label="Wishlists"
@@ -162,14 +199,39 @@ class UserProfile extends Component<Props, State> {
               onChangeText={text => this.wishListsChange(text)}
             />
           </Card>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity>
+          {!isSelf ? (
+            <>
+              <View style={styles.buttonRow}>
+                <Button
+                  containerStyle={styles.button}
+                  title="Invite"
+                  icon={<Icon name="save" type="antdesign" color="white" />}
+                />
+              </View>
+
+              <View style={styles.buttonRow}>
+                <Button
+                  onPress={() => {
+                    this.props.navigation.navigate(ROUTES.main.chat, {
+                      uid
+                    });
+                  }}
+                  containerStyle={styles.button}
+                  title="Message"
+                  icon={<Icon name="save" type="antdesign" color="white" />}
+                />
+              </View>
+            </>
+          ) : (
+            <View style={styles.buttonRow}>
               <Button
+                onPress={this.saveProfile}
+                containerStyle={styles.button}
                 title="Save"
                 icon={<Icon name="save" type="antdesign" color="white" />}
               />
-            </TouchableOpacity>
-          </View>
+            </View>
+          )}
         </View>
       </SafeAreaView>
     );
@@ -207,14 +269,15 @@ const styles = StyleSheet.create({
     paddingLeft: "5%",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom:10
+    marginBottom: 10
   },
   buttonRow: {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    marginBottom: 20
   },
   loginButton: {
     width: "100%",
@@ -238,4 +301,7 @@ const styles = StyleSheet.create({
     color: "red"
   }
 });
+
+const UserProfile = inject("authStore")(observer(UserProfileComponent));
+
 export { UserProfile };
