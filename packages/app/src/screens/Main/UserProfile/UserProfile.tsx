@@ -9,7 +9,6 @@ import {
 import {
   Button,
   Input,
-  ListItem,
   Card,
   Text,
   Icon,
@@ -38,8 +37,8 @@ class UserProfile extends Component<Props, State> {
     friendsMadeAmount: 0,
     location: "Room 1, Shenzhen, China",
     spareRooms: 0,
-    bioHobbies: "",
-    wishLists: "",
+    bioHobbies: "Night Owl",
+    wishLists: "Beautiful Girls",
     modalVisible: false
   };
 

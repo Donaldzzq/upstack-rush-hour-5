@@ -1,17 +1,11 @@
 import React from "react";
 import {
   View,
-  Image,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView
 } from "react-native";
 import {
-  Button,
-  Input,
-  ListItem,
-  Card,
-  Text,
   Icon,
   Divider
 } from "react-native-elements";

@@ -46,8 +46,8 @@ class Profile extends Component<Props, State> {
     placesVisitedAmount: 0,
     friendsMadeAmount: 0,
     location: "Room 1, Shenzhen, China",
-    spareRooms: 0,
-    bioHobbies: "Night Cat",
+    spareRooms: 2,
+    bioHobbies: "Night Owl",
     wishLists: "Beautiful Girls",
     modalVisible: false
   };
