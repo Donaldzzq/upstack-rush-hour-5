@@ -7,6 +7,7 @@ const uuidv4 = require("uuid/v4");
 const axios = require("axios");
 const {
   User,
+  Location,
   Sequelize: { Op }
 } = require("../models");
 
@@ -111,6 +112,17 @@ router.post("/register", async (req, res) => {
       ...newUser,
       // password: md5(req.body.password)
       clear_password: req.body.password
+    });
+
+    await Location.create({
+      country: req.body.country,
+      city: req.body.city,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude,
+      status: 1,
+      surfable: 1,
+      spare_rooms: 0,
+      user_uid: newUser.uid
     });
 
     const token = Token.sign({ ...newUser, id: created.id });

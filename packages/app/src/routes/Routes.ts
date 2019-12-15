@@ -12,11 +12,12 @@ const MAIN_ROUTES = {
   me: "Me",
   map: "Map",
   message: "Message",
+  invite: "Invite",
 
   //
   chat: "Chat",
   userprofile: "UserProfile",
-  profile:"Profile",
+  profile: "Profile"
 };
 
 export const ROUTES = {

@@ -35,7 +35,8 @@ router.get(
           model: User,
           as: "fromUser"
         }
-      ]
+      ],
+      order: [["createdAt", "DESC"]]
     });
 
     res.send(messages);
@@ -52,7 +53,29 @@ router.get(
     ON t1.from_uid="${req.params.uid}" AND t1.to_uid = t2.to_uid AND t1.created_at = t2.created_at JOIN users ON users.uid=t1.to_uid;`,
       { type: sequelize.QueryTypes.SELECT }
     );
-    res.send(messages);
+
+    const receivedMessages = await sequelize.query(
+      `
+    SELECT t1.*,users.first_name,users.last_name,users.avatar,users.uid as user_uid,users.id as user_id FROM messages t1
+  JOIN (SELECT from_uid, MAX(created_at) created_at FROM messages GROUP BY from_uid) t2
+    ON t1.to_uid="${req.params.uid}" AND t1.from_uid = t2.from_uid AND t1.created_at = t2.created_at JOIN users ON users.uid=t1.from_uid;`,
+      { type: sequelize.QueryTypes.SELECT }
+    );
+
+    receivedMessages.forEach(message => {
+      const index = messages.findIndex(
+        _message => _message.user_id === message.user_id
+      );
+      if (index !== -1) {
+        if (messages[index].id < message.id) {
+          messages[index] = message;
+        }
+      } else {
+        messages.push(message);
+      }
+    });
+
+    res.send(messages.sort((a, b) => b.id - a.id));
   })
 );
 

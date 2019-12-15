@@ -8,11 +8,13 @@ import { Chat } from "../screens/Main/Chat";
 import { MessageNavigator } from "./MessageNavigator";
 import { UserProfile } from "../screens/Main/UserProfile";
 import { Profile } from "../screens/Main/Profile";
+import { InviteNavigator } from "./InviteNavigator";
 
 const BottomTab = createBottomTabNavigator(
   {
     [ROUTES.main.map]: MapNavigator,
     [ROUTES.main.message]: MessageNavigator,
+    [ROUTES.main.invite]: InviteNavigator,
     [ROUTES.main.me]: MeNavigator
   },
   {

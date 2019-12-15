@@ -7,16 +7,15 @@ import {
   FlatList,
   SafeAreaView
 } from "react-native";
-import {
-  ListItem,
-  Text,
-  Icon,
-  Divider
-} from "react-native-elements";
+import { ListItem, Text, Icon, Divider } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
+import { inject, observer } from "mobx-react";
+import { AuthStore } from "../../../store/AuthStore";
+import { api } from "../../../config/api";
 
 interface Props {
   navigation: NavigationStackProp;
+  authStore: AuthStore;
 }
 interface State {
   userName: String;
@@ -24,7 +23,7 @@ interface State {
   spareRooms: Number;
   bioHobbies: String;
   wishLists: String;
-  modalVisible: Boolean;
+  userAvatar: String;
 }
 
 const list = [
@@ -40,16 +39,29 @@ const list = [
   }
 ];
 
-class Profile extends Component<Props, State> {
+class ProfileComponent extends Component<Props, State> {
   state = {
-    userName: "Jennifer Lawerance",
+    userName: "",
     placesVisitedAmount: 0,
     friendsMadeAmount: 0,
-    location: "Room 1, Shenzhen, China",
-    spareRooms: 2,
-    bioHobbies: "Night Owl",
-    wishLists: "Beautiful Girls",
-    modalVisible: false
+    location: "",
+    spareRooms: 0,
+    bioHobbies: "",
+    wishLists: "",
+    userAvatar: ""
+  };
+
+  componentDidMount = async () => {
+    const { authStore } = this.props;
+    const { data: user } = await api.get(`user/${authStore.user.id}`);
+    this.setState({
+      userName: `${user.first_name} ${user.last_name}`,
+      location: user.Location
+        ? `${user.Location.country} ${user.Location.city}`
+        : "",
+      spareRooms: user.Location ? user.Location.spare_rooms : 0,
+      userAvatar: user.avatar
+    });
   };
 
   renderItem = ({ item }) => {
@@ -67,7 +79,6 @@ class Profile extends Component<Props, State> {
         title={item.title}
         subtitle={subtitle}
         bottomDivider
-        //chevron
       />
     );
   };
@@ -81,7 +92,7 @@ class Profile extends Component<Props, State> {
   };
 
   render() {
-    const { userName, location, spareRooms } = this.state;
+    const { userName, location, spareRooms, userAvatar } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.buttonRow}>
@@ -102,13 +113,14 @@ class Profile extends Component<Props, State> {
           {/* <Text style={styles.title}>Dashboard</Text> */}
           <View style={styles.information}>
             <View>
-              <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
-                source={{
-                  uri:
-                    "https://akns-images.eonline.com/eol_images/Entire_Site/2019822/rs_1024x759-190922200817-1024-jennifer-lawrence-amazon.jpg?fit=inside|900:auto&output-quality=90"
-                }}
-              />
+              {userAvatar !== "" ? (
+                <Image
+                  style={{ width: 100, height: 100, borderRadius: 10 }}
+                  source={{
+                    uri: userAvatar
+                  }}
+                />
+              ) : null}
             </View>
             <View style={styles.showAmount}>
               <Text h4>{userName}</Text>
@@ -163,7 +175,7 @@ const styles = StyleSheet.create({
     paddingLeft: "5%",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom:10
+    marginBottom: 10
   },
   loginButton: {
     width: "100%",
@@ -187,4 +199,7 @@ const styles = StyleSheet.create({
     color: "red"
   }
 });
+
+const Profile = inject("authStore")(observer(ProfileComponent));
+
 export { Profile };

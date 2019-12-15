@@ -84,7 +84,7 @@ export class AuthStore {
   @action onLogin = async () => {
     const token = await this.getToken();
     this.isLoggedIn = true;
-    ChatStore.authenticate(token);
+    ChatStore.authenticate(this.user.uid, token);
   };
 
   @action setUser = user => {

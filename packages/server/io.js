@@ -8,9 +8,12 @@ module.exports = server => {
       socket.on("auth", data => {
         try {
           Token.validate(data.token);
-          const user = Token.decode(jwt);
-          socket.join(user.user_id);
-        } catch (err) {}
+          const user = Token.decode(data.token);
+          socket.join(user.uid);
+          console.log("Joined user " + user.uid);
+        } catch (err) {
+          console.log(err.message);
+        }
       });
     });
   }

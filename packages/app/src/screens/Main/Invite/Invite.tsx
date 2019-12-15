@@ -22,13 +22,17 @@ interface Props {
 }
 interface State {}
 
-class MessageComponent extends Component<Props, State> {
+class InviteComponent extends Component<Props, State> {
   componentDidMount = async () => {
     const { authStore, chatStore } = this.props;
 
-    if (chatStore.users.length === 0) {
-      chatStore.updateMessages(authStore.user.uid);
+    if (chatStore.inviteUsers.length === 0) {
+      chatStore.updateInvites(authStore.user.uid);
     }
+
+    this.props.navigation.addListener("didFocus", () => {
+      chatStore.setInviteUnread(0);
+    });
   };
 
   extractItemKey = item => {
@@ -36,8 +40,10 @@ class MessageComponent extends Component<Props, State> {
   };
 
   gotoUser = user => () => {
-    this.props.navigation.navigate(ROUTES.main.chat, {
-      uid: user.uid
+    const { chatStore } = this.props;
+    chatStore.resetInviteForUser(user.uid);
+    this.props.navigation.navigate(ROUTES.main.userprofile, {
+      id: user.id
     });
   };
 
@@ -50,9 +56,7 @@ class MessageComponent extends Component<Props, State> {
         subtitle={item.subtitle}
         bottomDivider
         rightElement={
-          item.unread ? (
-            <Badge value={item.unread} status="error"></Badge>
-          ) : null
+          item.unread ? <Badge value={null} status="error"></Badge> : null
         }
         chevron
       />
@@ -65,12 +69,12 @@ class MessageComponent extends Component<Props, State> {
 
   render() {
     const { chatStore } = this.props;
-    const users = chatStore.users.map(user => ({
-      name: `${user.first_name} ${user.last_name}`,
-      avatar_url: user.avatar,
-      id: user.user_id,
-      uid: user.user_uid,
-      subtitle: user.body,
+    const users = chatStore.inviteUsers.map(user => ({
+      name: `${user.fromUser.first_name} ${user.fromUser.last_name}`,
+      avatar_url: user.fromUser.avatar,
+      id: user.fromUser.id,
+      uid: user.fromUser.uid,
+      subtitle: `Invited you to ${user.fromUser.Location.country}`,
       unread: user.unread
     }));
 
@@ -111,6 +115,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const Message = inject("authStore", "chatStore")(observer(MessageComponent));
+const Invite = inject("authStore", "chatStore")(observer(InviteComponent));
 
-export { Message };
+export { Invite };

@@ -10,9 +10,14 @@ import {
   Divider
 } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
+import { inject, observer } from "mobx-react";
+import { AuthStore } from "../../../store/AuthStore";
+import { api } from "../../../config/api";
+import { ROUTES } from "../../../routes/Routes";
 
 interface Props {
   navigation: NavigationStackProp;
+  authStore: AuthStore;
 }
 
 interface State {
@@ -20,6 +25,7 @@ interface State {
   location: String;
   placesVisitedAmount: Number;
   friendsMadeAmount: Number;
+  userAvatar: string;
 }
 
 const list = [
@@ -28,50 +34,50 @@ const list = [
     iconName: "profile",
     iconType: "antdesign",
     navigatePage: "UserProfile"
-  },
-  {
-    title: "Messages",
-    iconName: "message",
-    iconType: "material",
-    navigatePage: "Message"
-  },
-  {
-    title: "Where To Next?",
-    iconName: "local-airport",
-    iconType: "material",
-    navigatePage: "Map"
-  },
-  {
-    title: "Invite",
-    iconName: "adduser",
-    iconType: "antdesign",
-    navigatePage: "Profile"
   }
+  // {
+  //   title: "Messages",
+  //   iconName: "message",
+  //   iconType: "material",
+  //   navigatePage: "Message"
+  // },
+  // {
+  //   title: "Where To Next?",
+  //   iconName: "local-airport",
+  //   iconType: "material",
+  //   navigatePage: "Map"
+  // },
+  // {
+  //   title: "Invite",
+  //   iconName: "adduser",
+  //   iconType: "antdesign",
+  //   navigatePage: "Profile"
+  // }
 ];
 
-class Me extends Component<Props, State> {
+class MeComponent extends Component<Props, State> {
   state = {
-    userName: "Jennifer Lawerance",
-    location: "Room 1, Shenzhen, China",
+    userName: "",
+    location: "",
     placesVisitedAmount: 0,
-    friendsMadeAmount: 0
+    friendsMadeAmount: 0,
+    userAvatar: ""
+  };
+
+  componentDidMount = async () => {
+    const { authStore } = this.props;
+    const { data: user } = await api.get(`user/${authStore.user.id}`);
+    this.setState({
+      userName: `${user.first_name} ${user.last_name}`,
+      location: user.Location
+        ? `${user.Location.country} ${user.Location.city}`
+        : "",
+      userAvatar: user.avatar
+    });
   };
 
   goTo = navigatePage => () => {
     this.props.navigation.navigate(navigatePage);
-  };
-
-  renderItem = ({ item }) => {
-    return (
-      <ListItem
-        onPress={this.goTo(item.navigatePage)}
-        leftAvatar={<Icon name={item.iconName} type={item.iconType}></Icon>}
-        title={item.title}
-        subtitle={item.subtitle}
-        bottomDivider
-        chevron
-      />
-    );
   };
 
   extractItemKey = item => {
@@ -82,8 +88,19 @@ class Me extends Component<Props, State> {
     return null;
   };
 
+  logout = () => {
+    const { authStore } = this.props;
+    authStore.logout();
+    this.props.navigation.navigate(ROUTES.auth.welcome);
+  };
+
   render() {
-    const { userName, placesVisitedAmount, friendsMadeAmount } = this.state;
+    const {
+      userName,
+      placesVisitedAmount,
+      friendsMadeAmount,
+      userAvatar
+    } = this.state;
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.container}>
@@ -98,14 +115,15 @@ class Me extends Component<Props, State> {
           {/* <Text style={styles.title}>Dashboard</Text> */}
           <View style={styles.information}>
             <View>
-              <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
-                //resizeMode="contain"
-                source={{
-                  uri:
-                    "https://akns-images.eonline.com/eol_images/Entire_Site/2019822/rs_1024x759-190922200817-1024-jennifer-lawrence-amazon.jpg?fit=inside|900:auto&output-quality=90"
-                }}
-              />
+              {userAvatar !== "" ? (
+                <Image
+                  style={{ width: 100, height: 100, borderRadius: 10 }}
+                  //resizeMode="contain"
+                  source={{
+                    uri: userAvatar
+                  }}
+                />
+              ) : null}
             </View>
             <View style={styles.showAmount}>
               <Text h4>{userName}</Text>
@@ -119,12 +137,20 @@ class Me extends Component<Props, State> {
           </View>
         </View>
         <Divider />
-        <FlatList
-          ListHeaderComponent={this.renderListHeader}
-          keyExtractor={this.extractItemKey}
-          renderItem={this.renderItem}
-          data={list}
-          style={{ flex: 1 }}
+
+        <ListItem
+          onPress={this.goTo(ROUTES.main.userprofile)}
+          leftAvatar={<Icon name="profile" type="antdesign"></Icon>}
+          title={"Profile"}
+          bottomDivider
+          chevron
+        />
+
+        <Button
+          onPress={this.logout}
+          containerStyle={styles.logoutButtonContainer}
+          buttonStyle={styles.logoutButton}
+          title="Logout"
         />
       </View>
     );
@@ -184,6 +210,19 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red"
+  },
+  logoutButtonContainer: {
+    width: "100%",
+    marginTop: 30,
+    paddingHorizontal: 20,
+    backgroundColor: "red"
+  },
+  logoutButton: {
+    backgroundColor: "red",
+    color: "white"
   }
 });
+
+const Me = inject("authStore")(observer(MeComponent));
+
 export { Me };

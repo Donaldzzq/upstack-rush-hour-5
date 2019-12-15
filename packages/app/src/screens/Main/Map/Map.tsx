@@ -15,8 +15,7 @@ import { ListItem, Icon } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 import CountryPicker, {
   Country,
-  CountryCode,
-  getAllCountries
+  CountryCode
 } from "react-native-country-picker-modal";
 import { api } from "../../../config/api";
 import { ROUTES } from "../../../routes/Routes";
@@ -30,7 +29,6 @@ interface State {
   countryCode: CountryCode;
   country: Object;
   users: any[];
-  availableCountries: string[];
 }
 
 // const list = [
@@ -57,8 +55,7 @@ class Map extends Component<Props, State> {
     modalVisible: false,
     countryCode: null,
     country: {},
-    users: [],
-    availableCountries: ["US", "GB"]
+    users: []
   };
 
   map = React.createRef<MapView>();
@@ -151,7 +148,7 @@ class Map extends Component<Props, State> {
   };
 
   render() {
-    const { modalVisible, users, countryCode, availableCountries } = this.state;
+    const { modalVisible, users, countryCode } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchButton}>
@@ -159,7 +156,7 @@ class Map extends Component<Props, State> {
             <Icon name="map-search-outline" type="material-community" />
           </TouchableOpacity>
           <CountryPicker
-            countryCodes={availableCountries}
+            countryCodes={["US", "GB", "HK"]}
             countryCode={countryCode}
             withFlag
             withFilter

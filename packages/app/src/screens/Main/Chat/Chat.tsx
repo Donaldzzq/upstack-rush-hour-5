@@ -24,11 +24,13 @@ class ChatComponent extends React.Component<Props, State> {
   };
 
   componentDidMount = async () => {
-    const { navigation, authStore } = this.props;
+    const { navigation, authStore, chatStore } = this.props;
     const uid = navigation.getParam("uid");
     const { data: messagesRaw } = await api.get(
       `message/between/${authStore.user.uid}/${uid}`
     );
+
+    chatStore.resetUnreadForUser(uid);
 
     this.setState({
       messages: messagesRaw.map(message => ({
@@ -52,6 +54,10 @@ class ChatComponent extends React.Component<Props, State> {
       //     }
       //   }
       // ]
+    });
+
+    this.props.navigation.addListener("didFocus", () => {
+      chatStore.setUnread(0);
     });
   };
 

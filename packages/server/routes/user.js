@@ -30,39 +30,34 @@ router.get(
   })
 );
 
-router.post(
-  "/",
-  asyncError(async (req, res, next) => {
-    res.send(
-      await User.create({ ...req.body, password: md5(req.body.password) })
-    );
-  })
-);
-
 router.put(
   "/:user_id",
-  checkOwnerInParams("user_id"),
+  // checkOwnerInParams("user_id"),
   asyncError(async (req, res, next) => {
-    res.send(
-      await User.update(
-        { ...req.body, password: md5(req.body.password) },
-        { where: { id: req.params.user_id } }
-      )
-    );
-  })
-);
+    const user = await User.findOne({ where: { id: req.params.user_id } });
+    const location = await Location.findOne({
+      where: {
+        user_uid: user.uid
+      }
+    });
+    if (location) {
+      await location.update({
+        country: req.body.location.country,
+        city: req.body.location.city,
+        // latitude: req.body.location.latitude,
+        // longitude: req.body.location.longitude,
+        spare_rooms: req.body.location.spare_rooms
+      });
+    } else {
+      await Location.create({
+        user_uid: user.uid,
+        country: req.body.location.country,
+        city: req.body.location.city,
+        spare_rooms: req.body.location.spare_rooms
+      });
+    }
 
-router.put(
-  "/:user_id/location",
-  checkOwnerInParams("user_id"),
-  asyncError(async (req, res, next) => {
-    const { lat, lng } = req.body;
-    res.send(
-      await Location.update(
-        { lat, lng },
-        { where: { user_id: req.params.user_id } }
-      )
-    );
+    res.status(200).end();
   })
 );
 
