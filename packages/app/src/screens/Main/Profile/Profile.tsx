@@ -3,18 +3,12 @@ import {
   View,
   Image,
   StyleSheet,
-  Modal,
-  TouchableHighlight,
   TouchableOpacity,
   FlatList,
-  Alert,
-  Picker
+  SafeAreaView
 } from "react-native";
 import {
-  Button,
-  Input,
   ListItem,
-  Card,
   Text,
   Icon,
   Divider
@@ -26,8 +20,6 @@ interface Props {
 }
 interface State {
   userName: String;
-  placesVisitedAmount: Number;
-  friendsMadeAmount: Number;
   location: String;
   spareRooms: Number;
   bioHobbies: String;
@@ -37,24 +29,14 @@ interface State {
 
 const list = [
   {
-    title: "Location",
-    iconName: "profile",
-    iconType: "antdesign"
-  },
-  {
-    title: "Messages",
-    iconName: "message",
+    title: "Bio",
+    iconName: "person",
     iconType: "material"
   },
   {
-    title: "Where To Next?",
-    iconName: "message",
+    title: "Wishlists",
+    iconName: "lightbulb-outline",
     iconType: "material"
-  },
-  {
-    title: "Invite",
-    iconName: "adduser",
-    iconType: "antdesign"
   }
 ];
 
@@ -64,25 +46,28 @@ class Profile extends Component<Props, State> {
     placesVisitedAmount: 0,
     friendsMadeAmount: 0,
     location: "Room 1, Shenzhen, China",
-    spareRooms: 0,
-    bioHobbies: "",
-    wishLists: "",
+    spareRooms: 2,
+    bioHobbies: "Night Owl",
+    wishLists: "Beautiful Girls",
     modalVisible: false
   };
 
-  closeModal = () => {
-    this.setState({ modalVisible: false });
-  };
-
   renderItem = ({ item }) => {
+    const { bioHobbies, wishLists } = this.state;
+    let subtitle = "";
+    if (item.title === "Bio") {
+      subtitle = bioHobbies;
+    }
+    if (item.title === "Wishlists") {
+      subtitle = wishLists;
+    }
     return (
       <ListItem
-        //onPress={this.setModalVisible(true)}
         leftAvatar={<Icon name={item.iconName} type={item.iconType}></Icon>}
         title={item.title}
-        subtitle={item.subtitle}
+        subtitle={subtitle}
         bottomDivider
-        chevron
+        //chevron
       />
     );
   };
@@ -95,42 +80,16 @@ class Profile extends Component<Props, State> {
     return null;
   };
 
-  locationChange = text => {
-    this.setState({ location: text });
-  };
-
-  spareRoomsChange = text => {
-    if (/^\d+$/.test(text)) {
-      this.setState({
-        spareRooms: parseInt(text,10)
-      });
-    }else{
-      this.setState({ spareRooms: 0});
-    }
-  };
-
-  bioHobbiesChange = text => {
-    this.setState({ bioHobbies: text });
-  };
-
-  wishListsChange = text => {
-    this.setState({ wishLists: text });
-  };
-
-  saveData = () => {};
-
   render() {
-    const {
-      userName,
-      placesVisitedAmount,
-      friendsMadeAmount,
-      location,
-      spareRooms,
-      bioHobbies,
-      wishLists
-    } = this.state;
+    const { userName, location, spareRooms } = this.state;
     return (
-      <View style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity onPress={() => this.props.navigation.goBack(null)}>
+            <Icon name="ios-arrow-back" type="ionicon" />
+          </TouchableOpacity>
+        </View>
+        <Divider />
         <View style={styles.container}>
           <Image
             style={{ width: 200, height: 100 }}
@@ -145,7 +104,6 @@ class Profile extends Component<Props, State> {
             <View>
               <Image
                 style={{ width: 100, height: 100, borderRadius: 10 }}
-                //resizeMode="contain"
                 source={{
                   uri:
                     "https://akns-images.eonline.com/eol_images/Entire_Site/2019822/rs_1024x759-190922200817-1024-jennifer-lawrence-amazon.jpg?fit=inside|900:auto&output-quality=90"
@@ -154,106 +112,31 @@ class Profile extends Component<Props, State> {
             </View>
             <View style={styles.showAmount}>
               <Text h4>{userName}</Text>
+              <Text style={styles.showAmountText}>Location: {location}</Text>
               <Text style={styles.showAmountText}>
-                Places visited: {placesVisitedAmount}
-              </Text>
-              <Text style={styles.showAmountText}>
-                Friends Made: {friendsMadeAmount}
+                Spare Rooms: {spareRooms}
               </Text>
             </View>
           </View>
-          <Card
-            containerStyle={{
-              padding: 0,
-              width:"95%",
-              marginTop:20,
-              marginBottom:20,
-            }}
-          >
-            <Input
-              placeholder="Input your location"
-              leftIcon={{ type: "entypo", name: "location" }}
-              label="Location"
-              leftIconContainerStyle={{ marginRight: 10 }}
-              containerStyle={{ marginBottom: 20 }}
-              value={location}
-              onChangeText={text => this.locationChange(text)}
-            />
-            <Input
-              placeholder="Input your spare rooms amount"
-              leftIcon={{ type: "ionicon", name: "md-bed" }}
-              label="Spare Rooms"
-              leftIconContainerStyle={{ marginRight: 10 }}
-              containerStyle={{ marginBottom: 20 }}
-              value={spareRooms.toString()}
-              keyboardType={'numeric'}
-              onChangeText={text => this.spareRoomsChange(text)}
-            />
-            <Input
-              placeholder="Input your biological hobbies"
-              leftIcon={{ type: "material", name: "person" }}
-              label="Bio"
-              leftIconContainerStyle={{ marginRight: 10 }}
-              containerStyle={{ marginBottom: 20 }}
-              value={bioHobbies}
-              onChangeText={text => this.bioHobbiesChange(text)}
-            />
-            <Input
-              placeholder="Input your wishlists for customers"
-              leftIcon={{ type: "material", name: "lightbulb-outline" }}
-              label="Wishlists"
-              leftIconContainerStyle={{ marginRight: 10 }}
-              containerStyle={{ marginBottom: 20 }}
-              value={wishLists}
-              onChangeText={text => this.wishListsChange(text)}
-            />
-          </Card>
-          <View style={styles.buttonRow}>
-          <TouchableOpacity onPress={() => this.props.navigation.goBack(null)}>
-            <Icon name="ios-arrow-back" type="ionicon" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Button
-              title="Save"
-              icon={<Icon name="save" type="antdesign" color="white" />}
-            />
-          </TouchableOpacity>
-          </View>
         </View>
-
-        {/* <FlatList
+        <Divider />
+        <FlatList
           ListHeaderComponent={this.renderListHeader}
           keyExtractor={this.extractItemKey}
           renderItem={this.renderItem}
           data={list}
-          style={{ flex: 1 }}
+          style={{ flexGrow: 0 }}
         />
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            alert("Modal has been closed.");
-          }}
-        >
-          <View style={{ marginTop: 22 }}>
-            <View>
-              <Text>Hello World!</Text>
-
-              <TouchableHighlight onPress={this.closeModal}>
-                <Icon name="close" type="AntDesign" />
-              </TouchableHighlight>
-            </View>
-          </View>
-        </Modal> */}
-      </View>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 0,
+    marginTop: 30,
+    marginBottom: 50,
     justifyContent: "center",
     alignItems: "center"
   },
@@ -276,10 +159,11 @@ const styles = StyleSheet.create({
     color: "grey"
   },
   buttonRow: {
-    width: "90%",
-    flexDirection: "row",
-    alignItems: "center",
+    flexGrow: 0,
+    paddingLeft: "5%",
+    alignItems: "flex-start",
     justifyContent: "space-between",
+    marginBottom:10
   },
   loginButton: {
     width: "100%",
