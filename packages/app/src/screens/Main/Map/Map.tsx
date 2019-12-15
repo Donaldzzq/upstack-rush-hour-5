@@ -14,7 +14,7 @@ const list = [
     name: "Amy Farha",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-    subtitle: "Vice President",
+    subtitle: "Frontend Dev",
     latitude: 22.6831,
     longitude: 114.0579
   },
@@ -22,7 +22,7 @@ const list = [
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "Backend Dev",
     latitude: 22.6431,
     longitude: 114.0579
   }
@@ -64,7 +64,7 @@ class Map extends Component<Props, State> {
   };
 
   renderListHeader = () => {
-    return <Text style={styles.title}>People in </Text>;
+    return <Text style={styles.title}>People in Shenzhen</Text>;
   };
 
   render() {
