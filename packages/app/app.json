@@ -18,7 +18,11 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.upstack.meet"
+    },
+    "android": {
+      "package": "com.upstack.meet"
     },
     "packagerOpts": {
       "config": "metro.config.js"

@@ -4,6 +4,7 @@ import { Button, Input } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { AuthStore } from "../../../store/AuthStore";
+import { inject, observer } from "mobx-react";
 
 interface Props {
   navigation: NavigationStackProp;
@@ -17,7 +18,7 @@ interface State {
   };
 }
 
-class Register extends Component<Props, State> {
+class RegisterComponent extends Component<Props, State> {
   state = {
     errorMessage: "",
     form: {
@@ -38,14 +39,35 @@ class Register extends Component<Props, State> {
   componentDidMount = () => {};
 
   register = async () => {
+
+    const { form } = this.state;
+
+    if (!form.email || form.email === "" || form.password === "" || !form.password) {
+      this.setState({
+        errorMessage: "Email and password are all required"
+      });
+      return;
+    }
+
+
     const result = await this.props.authStore.register(this.state.form);
-    console.log(result)
 
     if (result.success) {
       this.props.navigation.navigate("Main");
     } else {
       this.setState({
         errorMessage: result.error
+      });
+    }
+  };
+
+  googleLogin = async () => {
+    const response = await this.props.authStore.googleLogin();
+    if (response.success) {
+      this.props.navigation.navigate("Main");
+    } else {
+      this.setState({
+        errorMessage: response.message
       });
     }
   };
@@ -115,6 +137,7 @@ class Register extends Component<Props, State> {
 
             <View style={styles.buttonRow}>
               <Button
+                onPress={this.googleLogin}
                 containerStyle={styles.loginButton}
                 title="Login With Google"
               />
@@ -166,5 +189,7 @@ const styles = StyleSheet.create({
     color: "red"
   }
 });
+
+const Register = inject("authStore")(observer(RegisterComponent))
 
 export { Register };
