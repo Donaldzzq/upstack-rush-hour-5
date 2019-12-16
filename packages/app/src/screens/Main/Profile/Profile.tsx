@@ -12,6 +12,11 @@ import { NavigationStackProp } from "react-navigation-stack";
 import { inject, observer } from "mobx-react";
 import { AuthStore } from "../../../store/AuthStore";
 import { api } from "../../../config/api";
+import {
+  CountryCode,
+  getAllCountries,
+  FlagType
+} from "react-native-country-picker-modal";
 
 interface Props {
   navigation: NavigationStackProp;
@@ -24,6 +29,8 @@ interface State {
   bioHobbies: String;
   wishLists: String;
   userAvatar: String;
+  countryCode: CountryCode;
+  country: string;
 }
 
 const list = [
@@ -48,19 +55,28 @@ class ProfileComponent extends Component<Props, State> {
     spareRooms: 0,
     bioHobbies: "",
     wishLists: "",
-    userAvatar: ""
+    userAvatar: "",
+    countryCode: null,
+    country: ""
   };
 
   componentDidMount = async () => {
-    const { authStore } = this.props;
-    const { data: user } = await api.get(`user/${authStore.user.id}`);
+    const { navigation, authStore } = this.props;
+    const id = navigation.getParam("id", authStore.user.id);
+    const countries = await getAllCountries(FlagType.FLAT);
+    const { data: user } = await api.get(`user/${id}`);
     this.setState({
       userName: `${user.first_name} ${user.last_name}`,
       location: user.Location
         ? `${user.Location.country} ${user.Location.city}`
         : "",
       spareRooms: user.Location ? user.Location.spare_rooms : 0,
-      userAvatar: user.avatar
+      userAvatar: user.avatar,
+      //uid: user.uid,
+      countryCode: countries.find(
+        _country => _country.name === user.Location.country
+      ).cca2,
+      country: user.Location.country
     });
   };
 
@@ -68,10 +84,10 @@ class ProfileComponent extends Component<Props, State> {
     const { bioHobbies, wishLists } = this.state;
     let subtitle = "";
     if (item.title === "Bio") {
-      subtitle = bioHobbies;
+      subtitle = bioHobbies !== "" ? bioHobbies : "Nope";
     }
     if (item.title === "Wishlists") {
-      subtitle = wishLists;
+      subtitle = wishLists !== "" ? wishLists : "Nope";
     }
     return (
       <ListItem
@@ -113,18 +129,18 @@ class ProfileComponent extends Component<Props, State> {
           {/* <Text style={styles.title}>Dashboard</Text> */}
           <View style={styles.information}>
             <View>
-              {userAvatar !== "" ? (
-                <Image
-                  style={{ width: 100, height: 100, borderRadius: 10 }}
-                  source={{
-                    uri: userAvatar
-                  }}
-                />
-              ) : null}
+              <Image
+                style={{ width: 100, height: 100, borderRadius: 10 }}
+                source={{
+                  uri: userAvatar
+                }}
+              />
             </View>
             <View style={styles.showAmount}>
               <Text h4>{userName}</Text>
-              <Text style={styles.showAmountText}>Location: {location}</Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <Text style={styles.showAmountText}>Location: {location}</Text>
+              </View>
               <Text style={styles.showAmountText}>
                 Spare Rooms: {spareRooms}
               </Text>
@@ -158,17 +174,20 @@ const styles = StyleSheet.create({
     color: "black"
   },
   information: {
-    justifyContent: "flex-start",
+    justifyContent: "center",
     flexDirection: "row",
-    alignItems: "flex-start"
+    alignItems: "center"
   },
   showAmount: {
+    flex: 0.9,
     marginLeft: 10
   },
   showAmountText: {
+    flexShrink: 1,
     marginTop: 12,
     fontSize: 15,
-    color: "grey"
+    color: "grey",
+    flexWrap: "wrap"
   },
   buttonRow: {
     flexGrow: 0,

@@ -42,7 +42,7 @@ class InviteComponent extends Component<Props, State> {
   gotoUser = user => () => {
     const { chatStore } = this.props;
     chatStore.resetInviteForUser(user.uid);
-    this.props.navigation.navigate(ROUTES.main.userprofile, {
+    this.props.navigation.navigate(ROUTES.main.profile, {
       id: user.id
     });
   };

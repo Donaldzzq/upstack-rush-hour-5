@@ -7,6 +7,8 @@
   "scripts": {
     "app": "yarn workspace app start --clear",
     "app-publish": "yarn workspace app expo-publish",
+    "android": "yarn workspace app expo-android",
+    "ios": "yarn workspace app expo-ios",
     "server": "yarn workspace server start"
   }
 }

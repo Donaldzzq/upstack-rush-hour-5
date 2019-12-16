@@ -3,18 +3,83 @@ import { View, Text, Image, StyleSheet, SafeAreaView } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { NavigationStackProp } from "react-navigation-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AuthStore } from "../../../store/AuthStore";
+import { inject, observer } from "mobx-react";
 
 interface Props {
   navigation: NavigationStackProp;
+  authStore: AuthStore;
 }
-interface State {}
+interface State {
+  errorMessage: String;
+  form: {
+    email: string;
+    password: string;
+  };
+}
 
-class Register extends Component<Props, State> {
-  state = {};
+class RegisterComponent extends Component<Props, State> {
+  state = {
+    errorMessage: "",
+    form: {
+      email: "",
+      password: ""
+    }
+  };
+
+  handleChange = field => text => {
+    this.setState(prevState => ({
+      form: {
+        ...prevState.form,
+        [field]: text
+      }
+    }));
+  };
 
   componentDidMount = () => {};
 
+  register = async () => {
+    const { form } = this.state;
+
+    if (
+      !form.email ||
+      form.email === "" ||
+      form.password === "" ||
+      !form.password
+    ) {
+      this.setState({
+        errorMessage: "Email and password are all required"
+      });
+      return;
+    }
+
+    const result = await this.props.authStore.register(this.state.form);
+
+    if (result.success) {
+      this.props.navigation.navigate("Main");
+    } else {
+      this.setState({
+        errorMessage: result.error
+      });
+    }
+  };
+
+  googleLogin = async () => {
+    const response = await this.props.authStore.googleLogin();
+    if (response.success) {
+      this.props.navigation.navigate("Main");
+    } else {
+      this.setState({
+        errorMessage: response.message
+      });
+    }
+  };
+
   render() {
+    const {
+      errorMessage,
+      form: { email, password }
+    } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAwareScrollView style={{ flex: 1 }}>
@@ -44,25 +109,30 @@ class Register extends Component<Props, State> {
               leftIcon={{ type: "font-awesome", name: "user" }}
             /> */}
             <Input
+              value={email}
+              onChangeText={this.handleChange("email")}
               containerStyle={styles.form}
               inputStyle={styles.input}
               label="Your email address"
               placeholder="Email"
-              leftIcon={{ type: "material", name: "email" }}
+              leftIcon={{ type: "font-awesome", name: "user" }}
             />
             <Input
+              value={password}
               secureTextEntry
+              onChangeText={this.handleChange("password")}
               containerStyle={styles.form}
               inputStyle={styles.input}
               label="Password"
               placeholder="Password"
               leftIcon={{ type: "font-awesome", name: "lock" }}
             />
+            {errorMessage !== "" ? (
+              <Text style={styles.error}>{errorMessage}</Text>
+            ) : null}
             <View style={styles.buttonRow}>
               <Button
-                onPress={() => {
-                  this.props.navigation.navigate("Main");
-                }}
+                onPress={this.register}
                 containerStyle={styles.loginButton}
                 title="Register"
               />
@@ -70,6 +140,7 @@ class Register extends Component<Props, State> {
 
             <View style={styles.buttonRow}>
               <Button
+                onPress={this.googleLogin}
                 containerStyle={styles.loginButton}
                 title="Login With Google"
               />
@@ -116,7 +187,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     left: 20
+  },
+  error: {
+    color: "red"
   }
 });
+
+const Register = inject("authStore")(observer(RegisterComponent));
 
 export { Register };

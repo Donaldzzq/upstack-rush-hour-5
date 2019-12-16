@@ -113,7 +113,7 @@ class Map extends Component<Props, State> {
   };
 
   gotoUser = user => () => {
-    this.props.navigation.navigate(ROUTES.main.userprofile, {
+    this.props.navigation.navigate(ROUTES.main.profile, {
       id: user.id
     });
   };
