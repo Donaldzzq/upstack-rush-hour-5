@@ -1,12 +1,13 @@
 {
   "name": "app",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "start": "expo start --clear",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "expo-publish": "expo publish",
     "eject": "expo eject",
     "postinstall": "expo-yarn-workspaces postinstall"
   },
@@ -41,6 +42,5 @@
     "babel-preset-expo": "^7.1.0",
     "expo-yarn-workspaces": "^1.2.1",
     "typescript": "^3.6.3"
-  },
-  "private": true
+  }
 }

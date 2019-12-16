@@ -1,12 +1,12 @@
 {
-    "private": true,
-    "name": "upstack-meet",
-    "workspaces": [
-      "packages/*"
-    ],
-    "scripts": {
-      "app": "yarn workspace app start --clear",
-      "server": "yarn workspace server start"
-    }
+  "private": true,
+  "name": "upstack-meet",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "app": "yarn workspace app start --clear",
+    "app-publish": "yarn workspace app expo-publish",
+    "server": "yarn workspace server start"
   }
-  
+}
